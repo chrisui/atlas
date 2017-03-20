@@ -4,14 +4,14 @@
 </p>
 <p>&nbsp;</p>
 
-Atlas :earth_africa:
+Atlas
 =====
 
 A whole world of documentation.
 
 [![Build Status](https://travis-ci.org/chrisui/atlas.svg?branch=master)](https://travis-ci.org/lystable/atlas)
 
-### What? :earth_americas:
+### What? :earth_africa:
 
 zero-config, pretty, highly discoverable atlas of all your documentation.
 
@@ -40,6 +40,18 @@ Anything under a `docs` directory (anywhere) is consumed
 How do I customise anything?
 
 - `_layout.js`
+
+### More! :earth_americas:
+
+Additional features?
+
+- Awesome search capabilities
+- Pull in contributors to each documentation file
+- First-class Github support
+  - Link to "contribute"/"edit"
+- First-class npm support
+  - Link to issues
+  - Pull dependants and dependencies
 
 Contributing
 ------------
