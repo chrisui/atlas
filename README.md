@@ -4,14 +4,14 @@
 </p>
 <p>&nbsp;</p>
 
-Atlas
+Atlas :earth_africa:
 =====
 
 A whole world of documentation.
 
 [![Build Status](https://travis-ci.org/chrisui/atlas.svg?branch=master)](https://travis-ci.org/lystable/atlas)
 
-### What?
+### What? :earth_americas:
 
 zero-config, pretty, highly discoverable atlas of all your documentation.
 
@@ -19,7 +19,7 @@ Write your docs as usual close to their relevant components and then generate fr
  
 **Works great with monorepos!*
 
-### How?
+### How? :earth_asia:
 
 Conventions! No config.
 
