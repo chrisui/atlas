@@ -1,5 +1,6 @@
 {
   "name": "atlas",
+  "version": "1.0.0",
   "scripts": {
     "test:lint": "eslint **/*.js --cache --cache-location .tmp/eslint/",
     "test:type": "flow",
