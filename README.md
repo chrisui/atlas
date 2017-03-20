@@ -1,6 +1,6 @@
 <p>&nbsp;</p>
 <p align="center">
-<img src="http://i.imgur.com/BRdEVYW.png" width="150px" />
+[Insert sweet logo here]
 </p>
 <p>&nbsp;</p>
 
@@ -15,29 +15,35 @@ A whole world of documentation.
 
 0 config pretty atlas of all your documentation. Write or generate your raw docs and then glue them together for your users in a pretty format.
 
+Enable the practice of keeping your docs as close to the code as possible.
+
 ### How?
 
 Conventions! No config.
 
 Anything under a `docs` directory (anywhere) is consumed
 
-- `_files.ext` and `_dirs` are ignored
 - Special `README.md` file can live as a sibling to `docs` (it acts as the index file)
 - Special treatment of `.md`, `.js` and `.html` files
   - Write `.md` as if it was just living in GitHub
   - Write `.js` exporting a React component to render
   - Write `.html` as far as your imagination takes you
 - Other files are discoverable (eg. `.png`, `.pdf` etc.)
+- Underscore prefixed `_files.ext` and `_dirs` are ignored
+- If you reference files outside of `docs` we'll pull those in too!
+- More special files to provide as much meta data in your docs as we can and reduce duplication
+  - `package.json`
+  - `LICENSE.x`
 
 How do I customise anything?
 
 - `_layout.js`
-  - Implement any way you want providing dependencies are prefixed with a `_`
 
 Contributing
 ------------
 
-- Bugs? Please submit a *Pull Request* with your a test which breaks.
+- Bugs? Please submit a *Pull Request* with a test which breaks.
+- Ideas? Open an issue and let's chat! :)
 
 For more details on all contributions see [CONTRIBUTING.md](./CONTRIBUTING.md)
 
