@@ -13,9 +13,11 @@ A whole world of documentation.
 
 ### What?
 
-0 config pretty atlas of all your documentation. Write or generate your raw docs and then glue them together for your users in a pretty format.
+zero-config, pretty, highly discoverable atlas of all your documentation.
 
-Enable the practice of keeping your docs as close to the code as possible.
+Write your docs as usual close to their relevant components and then generate from any* level!
+ 
+**Works great with monorepos!*
 
 ### How?
 
