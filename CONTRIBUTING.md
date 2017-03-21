@@ -14,3 +14,16 @@ and preferably include code/output examples since that can really help.
 ## Developing Atlas
 
 At an absolute minimum make sure `npm test` runs! :)
+
+### Design
+
+Stages:
+
+1. Indexing and building manifest
+  - Validation of docs tree
+  - Create searchable index
+  - Build manifest file (a webpack consumable js module)
+2. Webpack build consumes manifest and index
+3. Parse different file types
+  - All docs pages should provide a react component
+4. Render the docs application
