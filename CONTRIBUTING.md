@@ -20,8 +20,8 @@ At an absolute minimum make sure `npm test` runs! :)
 Stages:
 
 1. Indexing and building manifest
+  - Build tree of all docs, discovering first-class modules
   - Validation of docs tree
-  - Create searchable index
   - Build manifest file (a webpack consumable js module)
 2. Webpack build consumes manifest and index
 3. Parse different file types

@@ -16,7 +16,7 @@ A whole world of documentation.
 zero-config, pretty, highly discoverable atlas of all your documentation.
 
 Write your docs as usual close to their relevant components and then generate from any* level!
- 
+
 **Works great with monorepos!*
 
 ### How? :earth_asia:
@@ -45,10 +45,9 @@ How do I customise anything?
 
 Additional features?
 
-- Awesome search capabilities
-- Pull in contributors to each documentation file
 - First-class Github support
   - Link to "contribute"/"edit"
+  - Pull in contributors to each documentation file
 - First-class npm support
   - Link to issues
   - Pull dependants and dependencies

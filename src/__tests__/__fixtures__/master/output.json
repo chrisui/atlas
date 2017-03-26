@@ -1,6 +1,8 @@
 {
-  "docs": [
-    "index",
+  "paths": [
+    "",
+    "license",
+    "package",
     "some/arbitrary/namespace/a",
     "a",
     "b",
@@ -15,7 +17,7 @@
     "packages/b/src/b"
   ],
   "errors": [
-    "prefer local README in directory \"a\" rather than \"docs/a.md\""
+    "conflicting docs path"
   ],
   "reject": [
     "I SHOULD NOT BE HERE",
