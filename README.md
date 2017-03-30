@@ -50,7 +50,8 @@ Additional features?
   - Pull in contributors to each documentation file
 - First-class npm support
   - Link to issues
-  - Pull dependants and dependencies
+  - Show dependants and dependencies
+  - Link/embed the docs of your dependencies
 
 Contributing
 ------------

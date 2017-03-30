@@ -1,3 +1,4 @@
+const loaderUtils = require('loader-utils');
 const MarkdownIt = require('markdown-it');
 const MdAnchor = require('markdown-it-anchor');
 const MdEmoji = require('markdown-it-emoji');
@@ -6,7 +7,10 @@ const frontMatter = require('front-matter');
 const path = require('path');
 const isEmpty = require('lodash/isEmpty');
 
-module.exports = function markdownLoader(source) {
+module.exports = function markdownDocLoader(source) {
+  const options = loaderUtils.getOptions(this) || {};
+  this.cacheable(true);
+
   // track anchors discovered in file
   const anchors = [];
 
@@ -49,13 +53,18 @@ module.exports = function markdownLoader(source) {
     .use(MdEmoji, {})
     .use(MdAnchor, {
       permalink: true,
+      level: 2,
       callback: (token, anchor) => anchors.push(anchor),
     });
 
   const html = md.render(body);
 
-  // store data for doc loader to pick up
-  this.input = {anchors, attributes, type: 'md'};
+  if (options.meta) {
+    const meta = {anchors, attributes};
+    // meta files are just json!
+    return meta;
+  }
 
+  // non meta files are html!
   return html;
 };

@@ -26,12 +26,32 @@ const routeComponent = memoize(
   doc => doc.data.path.join('/')
 );
 
+const routeAnchor = memoize(
+  doc =>
+    () => (
+      <Anchors>
+        {doc.data.meta.anchors.map(anchor => (
+          <li>
+            <a href={`#${anchor.slug}`} key={anchor.slug}>{anchor.title}</a>
+          </li>
+        ))}
+      </Anchors>
+    ),
+  doc => doc.data.path.join('/')
+);
+
+const Anchors = styled.ul`
+  
+`;
+
 const Container = styled.div`
   display: flex;
+  max-width: 100%;
 `;
 
 const Sidebar = styled.div`
   margin-right: 30px;
+  max-width: 360px;
 `;
 
 const Content = styled.div`
@@ -49,6 +69,11 @@ const App = () => {
                 <Link to={`/${doc.data.path.join('/')}`} title={doc.data.file}>
                   {doc.data.path.join('/')} [{doc.data.type}:{doc.data.ext}]
                 </Link>
+                <Route
+                  path={`/${doc.data.path.join('/')}`}
+                  component={routeAnchor(doc)}
+                  exact={true}
+                />
               </li>
             ))}
           </ul>

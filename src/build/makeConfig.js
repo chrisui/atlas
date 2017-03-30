@@ -3,11 +3,17 @@ const path = require('path');
 const webpack = require('webpack');
 const AppCachePlugin = require('appcache-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const minimatch = require('minimatch');
 
 const babelOptions = {
   babelrc: false,
   presets: [require.resolve('babel-preset-react-app')],
 };
+
+const excludePrivate = [
+  minimatch.makeRe('**/_[a-zA-Z]*'),
+  minimatch.makeRe('**/_[a-zA-Z]*/**'),
+];
 
 function makeConfig(config) {
   return {
@@ -34,6 +40,7 @@ function makeConfig(config) {
     plugins: [
       new webpack.DefinePlugin({
         __CONTEXT__: JSON.stringify(config.root),
+        // TODO: process.NODE_ENV
       }),
       new AppCachePlugin({
         settings: ['prefer-online'],
@@ -43,6 +50,7 @@ function makeConfig(config) {
         title: 'Atlas',
         template: path.resolve('app/public/index.html'),
       }),
+      // TODO: uglify in prod build
     ],
     module: {
       rules: [
@@ -87,7 +95,7 @@ function makeConfig(config) {
             },
             'html-react-loader',
             'html-loader',
-            'markdown-doc-loader',
+            'md-doc-loader',
           ],
         },
         {

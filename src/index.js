@@ -44,5 +44,5 @@ module.exports = run;
 const path = require('path');
 run({
   root: path.resolve(__dirname, '../../lystable-frontend'),
-  // root: path.resolve(__dirname, '__tests__/__fixtures__/master/input')
+  //root: path.resolve(__dirname, '__tests__/__fixtures__/master/input')
 });

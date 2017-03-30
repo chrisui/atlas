@@ -14,8 +14,31 @@ function buildTree(paths) {
   return paths;
 }
 
-function enhancePaths(paths) {
-  return paths;
+async function enhancePath(path) {
+  return new Promise((resolve, reject) => {
+    if (path.type === 'doc') {
+      this.loadModule(
+        `!raw-loader!${path.ext}-doc-loader?meta!${path.file}`,
+        (err, source, sm, module) => {
+          if (err) {
+            return reject(err);
+          }
+          resolve(
+            Object.assign({}, path, {
+              meta: JSON.parse(source.replace('module.exports = ', '')),
+            })
+          );
+        }
+      );
+      return;
+    }
+
+    resolve(path);
+  });
+}
+
+async function enhancePaths(paths) {
+  return Promise.all(paths.map(enhancePath.bind(this)));
 }
 
 function genCode(paths) {
@@ -110,15 +133,25 @@ function packageFileToPath(file) {
 }
 
 function validate(paths) {
-  // only one instance of each path, conflicts should be resolved
-  return paths.every(
-    a => paths.filter(b => b.path.join('') === a.path.join('')).length === 1
+  // only one instance of each normalised path, conflicts should be resolved
+  const conflicts = paths.filter(
+    a => paths.filter(b => b.path.join('') === a.path.join('')).length > 1
   );
+
+  if (conflicts.length) {
+    const humanConflicts = conflicts
+      .map(path => path.path.join('/'))
+      .join(', ');
+    console.warn(`oops! conflicts! ${humanConflicts}`);
+  }
+
+  return paths;
 }
 
 // resolve docs bootstrap
 module.exports = function resolveDocsLoader(source) {
   const finalise = this.async();
+  this.cacheable(true);
 
   // track files added/removed from our target directory
   this.addContextDependency(this.options.context);
@@ -180,12 +213,11 @@ module.exports = function resolveDocsLoader(source) {
     layoutPaths,
   ]).then(flatten);
 
-  allPaths.then(paths => {
-    const isValid = validate(paths);
-    const enhancedPaths = enhancePaths(paths);
-    const tree = buildTree(enhancedPaths);
-    const code = genCode(tree);
-
-    finalise(null, code);
-  });
+  // process all our files and then tell webpack we're done
+  allPaths
+    .then(validate)
+    .then(enhancePaths.bind(this))
+    .then(buildTree)
+    .then(genCode)
+    .then(code => finalise(null, code));
 };
