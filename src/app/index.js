@@ -4,8 +4,9 @@ import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
 import memoize from 'lodash/memoize';
 import loadable from 'react-loadable';
 import styled from 'styled-components';
+import formatName from '../utils/formatName';
 
-import docs from '!resolve-docs-loader!./docs';
+import {tree, list} from '!resolve-docs-loader!./docs';
 
 const MyLoadingComponent = ({isLoading, error, pastDelay}) => {
   if (isLoading) {
@@ -28,21 +29,65 @@ const routeComponent = memoize(
 
 const routeAnchor = memoize(
   doc =>
-    () => (
-      <Anchors>
-        {doc.data.meta.anchors.map(anchor => (
-          <li>
-            <a href={`#${anchor.slug}`} key={anchor.slug}>{anchor.title}</a>
-          </li>
-        ))}
-      </Anchors>
-    ),
-  doc => doc.data.path.join('/')
+    () =>
+      doc.meta.anchors.length
+        ? <Tree>
+            {doc.meta.anchors.map(anchor => (
+              <Item>
+                <a href={`#${anchor.slug}`} key={anchor.slug}>{anchor.title}</a>
+              </Item>
+            ))}
+          </Tree>
+        : null,
+  doc => doc.path.join('/')
 );
 
-const Anchors = styled.ul`
-  
+const Tree = styled.ul`
+
 `;
+
+const Item = styled.li`
+
+`;
+
+const NavTree = ({root}) => (
+  <Tree>
+    {root.children.map(child => <NavItem key={child.value} node={child} />)}
+  </Tree>
+);
+
+const NavItem = ({node, ctx = []}) => (
+  <Item>
+    {node.data
+      ? [
+          <Link to={`/${node.data.path.join('/')}`} title={node.data.file}>
+            {node.value} [{node.data.type}:{node.data.ext}]
+          </Link>,
+          <Route
+            path={`/${node.data.path.join('/')}`}
+            component={routeAnchor(node.data)}
+            exact={true}
+          />,
+        ]
+      : <Link to={`/${[...ctx, node.value].join('/')}`}>
+          {node.value}
+        </Link>}
+    <Route path={`/${[...ctx, node.value].join('/')}`}>
+      {({match}) =>
+        match && node.children.length
+          ? <Tree>
+              {node.children.map(child => (
+                <NavItem
+                  node={child}
+                  key={child.value}
+                  ctx={[...ctx, node.value]}
+                />
+              ))}
+            </Tree>
+          : null}
+    </Route>
+  </Item>
+);
 
 const Container = styled.div`
   display: flex;
@@ -63,23 +108,10 @@ const App = () => {
     <Router>
       <Container>
         <Sidebar>
-          <ul>
-            {docs.map(doc => (
-              <li key={doc.id}>
-                <Link to={`/${doc.data.path.join('/')}`} title={doc.data.file}>
-                  {doc.data.path.join('/')} [{doc.data.type}:{doc.data.ext}]
-                </Link>
-                <Route
-                  path={`/${doc.data.path.join('/')}`}
-                  component={routeAnchor(doc)}
-                  exact={true}
-                />
-              </li>
-            ))}
-          </ul>
+          <NavTree root={tree} />
         </Sidebar>
         <Content>
-          {docs.map(doc => (
+          {list.map(doc => (
             <Route
               key={doc.id}
               path={`/${doc.data.path.join('/')}`}

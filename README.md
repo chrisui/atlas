@@ -37,10 +37,6 @@ Anything under a `docs` directory (anywhere) is consumed
   - `package.json`
   - `LICENSE.x`
 
-How do I customise anything?
-
-- `_layout.js`
-
 ### More! :earth_americas:
 
 Additional features?

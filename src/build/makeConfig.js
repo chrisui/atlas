@@ -22,14 +22,14 @@ function makeConfig(config) {
       'webpack-dev-server/client/index.js?http://localhost:8080/', // TODO: make dev only
     ],
     devtool: 'source-map', // TODO: make cheaper in dev
-    context: config.root,
+    context: config.context,
     output: {
       filename: 'bundle.js',
       path: path.resolve(process.cwd(), '.tmp/dist'),
       publicPath: '/',
     },
     resolve: {
-      modules: [config.root, 'node_modules'],
+      modules: [config.context, 'node_modules'],
     },
     resolveLoader: {
       modules: [
@@ -39,7 +39,7 @@ function makeConfig(config) {
     },
     plugins: [
       new webpack.DefinePlugin({
-        __CONTEXT__: JSON.stringify(config.root),
+        __CONTEXT__: JSON.stringify(config.context),
         // TODO: process.NODE_ENV
       }),
       new AppCachePlugin({
@@ -81,13 +81,13 @@ function makeConfig(config) {
         },
         {
           test: /\.jsx?$/,
-          include: [path.resolve('app'), config.root],
+          include: [path.resolve('app'), config.context],
           loader: 'babel-loader',
           options: babelOptions,
         },
         {
           test: /\.md$/,
-          include: [config.root],
+          include: [config.context],
           loaders: [
             {
               loader: 'babel-loader',
@@ -100,7 +100,7 @@ function makeConfig(config) {
         },
         {
           test: /\.html$/,
-          include: [config.root],
+          include: [config.context],
           loaders: [
             {
               loader: 'babel-loader',

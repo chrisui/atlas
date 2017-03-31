@@ -1,17 +1,67 @@
 const glob = require('../../utils/glob');
 const loaderUtils = require('loader-utils');
 const flatten = require('lodash/flatten');
+const zip = require('lodash/zip');
+const uniq = require('lodash/uniq');
 
 // TODO: This is a bit of a hacky use of loader. We would benefit from this resolution being a pre-webpack step however then do we lose incremental build/context watching capabilities?
-
-// TODO: Load all modules here and extract meta data
 
 function id(file) {
   return loaderUtils.getHashDigest(file, 'sha1', 'hex', 8);
 }
 
+function mapTree(tree, mapper) {
+  const mappedChildren = tree.children.map(node => mapTree(tree, mapper));
+  return mapper(Object.assign({}, tree, {children: mappedChildren}));
+}
+
+function squashTree(tree) {
+  let node = tree;
+
+  if (node.children.length === 1) {
+    node.value = [node.value, node.children[0].value].join('/');
+    node.squashed = true;
+    node.page = node.children[0].page;
+    node.children = node.children[0].children;
+    node = squashTree(node); // recurse on self to keep flattening
+  } else {
+    node.children = node.children.map(squashTree);
+  }
+
+  return node;
+}
+
 function buildTree(paths) {
-  return paths;
+  const tree = {
+    value: null,
+    page: null,
+    children: [],
+  };
+
+  paths.forEach(path => {
+    let node = tree;
+    path.path.forEach(part => {
+      if (!node.children.find(n => n.value === part)) {
+        node.children.push({
+          value: part,
+          page: null,
+          children: [],
+        });
+      }
+      node = node.children.find(n => n.value === part);
+    });
+    if (path.index) {
+      node.children.push({
+        value: 'INDEX',
+        page: path,
+        children: [],
+      });
+    } else {
+      node.page = path;
+    }
+  });
+
+  return tree;
 }
 
 async function enhancePath(path) {
@@ -41,18 +91,24 @@ async function enhancePaths(paths) {
   return Promise.all(paths.map(enhancePath.bind(this)));
 }
 
-function genCode(paths) {
-  const data = path => JSON.stringify(path);
-  const load = path => `function load() { return import('${path.file}')}`;
-  const id = path => JSON.stringify(path.id);
+function genCode(_tree, _list) {
+  const data = path => path ? JSON.stringify(path) : null;
+  const load = path =>
+    path ? `function load() { return import('${path.file}')}` : null;
+  const id = path => path ? JSON.stringify(path.id) : null;
+  const tree = node =>
+    `{data: ${data(node.page)}, value: ${data(node.value)}, load: ${load(node.page)}, children: ${children(node)}}`;
+  const children = node => `[\n${node.children.map(tree).join(',\n')}\n]`;
+  const list = paths =>
+    `[${paths
+      .map(
+        path => `{id: ${id(path)}, data: ${data(path)}, load: ${load(path)}}`
+      )
+      .join(',\n')}]`;
 
   return `// this is a generated file from atlas
-  
-    export default [
-      ${paths
-    .map(path => `{id: ${id(path)}, data: ${data(path)}, load: ${load(path)}},`)
-    .join('\n')}
-    ];
+    export const tree = ${tree(_tree)};
+    export const list = ${list(_list)};
   `;
 }
 
@@ -103,22 +159,6 @@ function assetFileToPath(file) {
   };
 }
 
-function layoutFileToPath(file) {
-  const ext = file.split('.').pop();
-  const path = file
-    .split('/') // get our path pieces
-    .filter(part => part !== 'docs') // normalise to exclude docs in path
-    .filter(part => part !== '_layout'); // normalise to exclude _layout in path
-
-  return {
-    id: id(file),
-    file,
-    path,
-    ext,
-    type: 'layout',
-  };
-}
-
 function packageFileToPath(file) {
   const ext = file.split('.').pop();
   const path = file.split('/').filter(part => part !== 'docs'); // get our path pieces // normalise to exclude docs in path
@@ -149,7 +189,7 @@ function validate(paths) {
 }
 
 // resolve docs bootstrap
-module.exports = function resolveDocsLoader(source) {
+module.exports = async function resolveDocsLoader(source) {
   const finalise = this.async();
   this.cacheable(true);
 
@@ -197,27 +237,19 @@ module.exports = function resolveDocsLoader(source) {
     ],
   }).then(files => files.map(assetFileToPath));
 
-  const layoutPaths = glob('**/docs/_layout.js', {
-    cwd: this.options.context,
-    ignore: [
-      '**/node_modules/**', // filter node_modules
-    ],
-  }).then(files => files.map(layoutFileToPath));
-
-  const allPaths = Promise.all([
+  const allPaths = await Promise.all([
     assetPaths,
     docPaths,
     readmePaths,
     packagePaths,
     licensePaths,
-    layoutPaths,
   ]).then(flatten);
 
-  // process all our files and then tell webpack we're done
-  allPaths
+  const paths = await Promise.resolve(allPaths)
     .then(validate)
-    .then(enhancePaths.bind(this))
-    .then(buildTree)
-    .then(genCode)
-    .then(code => finalise(null, code));
+    .then(enhancePaths.bind(this));
+  const tree = await Promise.resolve(paths).then(buildTree).then(squashTree);
+
+  const code = genCode(tree, paths);
+  finalise(null, code);
 };

@@ -43,6 +43,6 @@ module.exports = run;
 // TODO: Remove debugging
 const path = require('path');
 run({
-  root: path.resolve(__dirname, '../../lystable-frontend'),
-  //root: path.resolve(__dirname, '__tests__/__fixtures__/master/input')
+  context: path.resolve(__dirname, '../../lystable-frontend'),
+  //context: path.resolve(__dirname, '__tests__/__fixtures__/master/input')
 });
