@@ -21,6 +21,11 @@ Write your docs as usual close to their relevant components and then generate fr
 
 ### How? :earth_asia:
 
+```
+$ npm install -g atlas
+$ atlas # in any js project folder
+```
+
 Conventions! No config.
 
 Anything under a `docs` directory (anywhere) is consumed

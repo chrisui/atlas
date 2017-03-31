@@ -25,7 +25,7 @@ function makeConfig(config) {
     context: config.context,
     output: {
       filename: 'bundle.js',
-      path: path.resolve(process.cwd(), '.tmp/dist'),
+      path: path.resolve(process.cwd(), '.tmp/atlas-docs'),
       publicPath: '/',
     },
     resolve: {
@@ -48,7 +48,7 @@ function makeConfig(config) {
       }),
       new HtmlWebpackPlugin({
         title: 'Atlas',
-        template: path.resolve('app/public/index.html'),
+        template: path.resolve(__dirname, '../app/public/index.html'),
       }),
       // TODO: uglify in prod build
     ],
@@ -81,7 +81,7 @@ function makeConfig(config) {
         },
         {
           test: /\.jsx?$/,
-          include: [path.resolve('app'), config.context],
+          include: [path.resolve(__dirname, '../app'), config.context],
           loader: 'babel-loader',
           options: babelOptions,
         },

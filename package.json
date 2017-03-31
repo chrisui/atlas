@@ -12,6 +12,9 @@
     "postinstall": "npm run bootstrap",
     "format": "prettier --single-quote --trailing-comma es5 --no-bracket-spacing --write"
   },
+  "bin": {
+    "atlas": "src/bin/atlas.js"
+  },
   "author": "Chris Pearce <chris.pearce@lystable.com>",
   "license": "Apache-2.0",
   "devDependencies": {
