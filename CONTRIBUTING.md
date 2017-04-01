@@ -13,6 +13,14 @@ and preferably include code/output examples since that can really help.
 
 ## Developing Atlas
 
+### Installing and configuring dev environment
+
+1. Clone/fork the repo and checkout
+2. `npm install`
+3. `npm link` will make development version of `atlas` command available
+
+### Pushing and opening a pull request
+
 At an absolute minimum make sure `npm test` runs! :)
 
 ### Design
